@@ -2,7 +2,9 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using BotFormFlow.Forms;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.FormFlow;
 using Microsoft.Bot.Connector;
 
 namespace BotFormFlow
@@ -10,6 +12,10 @@ namespace BotFormFlow
     [BotAuthentication]
     public class MessagesController : ApiController
     {
+        internal static IDialog<ScheduleForm> MakeRoot()
+        {
+            return Chain.From(() => FormDialog.FromForm(ScheduleForm.BuildForm));
+        }
         /// <summary>
         /// POST: api/Messages
         /// Receive a message from a user and reply to it
@@ -18,7 +24,7 @@ namespace BotFormFlow
         {
             if (activity.Type == ActivityTypes.Message)
             {
-                await Conversation.SendAsync(activity, () => new Dialogs.RootDialog());
+                await Conversation.SendAsync(activity, MakeRoot);
             }
             else
             {
